@@ -1,0 +1,33 @@
+name: Update GitHub Stats SVG
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # هر شب ساعت ۱۲ شب اجرا میشه
+  workflow_dispatch: # امکان اجرای دستی از تب Actions
+
+jobs:
+  update-stats:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install Dependencies
+        run: pip install requests
+
+      - name: Generate SVG
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: python update_stats.py
+
+      - name: Commit and Push SVG
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add stats.svg
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto update stats SVG" && git push)
