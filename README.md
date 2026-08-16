@@ -4,6 +4,6 @@
 
 <img src="skills.svg" width="100%" alt="Skills banner">
 
-<img src="gh-stats.svg" width="100%" alt="GitHub stats banner">
+<img src="stats.svg" width="100%" alt="GitHub stats banner">
 
 <img src="footer.svg" width="100%" alt="Footer banner">
