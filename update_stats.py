@@ -2,7 +2,7 @@ import os
 import requests
 
 TOKEN=os.getenv("GH_TOKEN")
-USERNAME="PARSA313-CLOUD"
+USERNAME="Parsa313-cloud"
 
 query="""
 query($username: String!) {
@@ -25,7 +25,6 @@ query($username: String!) {
       totalCommitContributions
       totalPullRequestContributions
       totalPullRequestReviewContributions
-      totalRepositoryContributions
       restrictedContributionsCount
     }
   }
@@ -34,7 +33,13 @@ query($username: String!) {
 
 headers={"Authorization": f"bearer {TOKEN}"}
 res=requests.post("https://api.github.com/graphql", json={"query": query, "variables": {"username": USERNAME}}, headers=headers)
-data=res.json()["data"]["user"]
+res_data=res.json()
+
+if "errors" in res_data:
+    print("GraphQL Error:", res_data["errors"])
+    raise SystemExit(1)
+
+data=res_data["data"]["user"]
 
 repos_count=data["repositories"]["totalCount"]
 contribs=data["contributionsCollection"]
@@ -42,7 +47,8 @@ contribs=data["contributionsCollection"]
 commits=contribs["totalCommitContributions"]
 prs=contribs["totalPullRequestContributions"]
 reviews=contribs["totalPullRequestReviewContributions"]
-total_contribs=commits+prs+reviews+contribs["restrictedContributionsCount"]
+restricted=contribs.get("restrictedContributionsCount", 0)
+total_contribs=commits+prs+reviews+restricted
 
 lang_stats={}
 for repo in data["repositories"]["nodes"]:
@@ -61,7 +67,6 @@ lang_bars=""
 lang_labels=""
 current_x=48.0
 total_bar_width=704.0
-
 label_positions=[48.0, 282.66, 517.33]
 
 for idx, (l_name, l_info) in enumerate(sorted_langs):
@@ -80,15 +85,21 @@ for idx, (l_name, l_info) in enumerate(sorted_langs):
 with open("stats.template.svg", "r", encoding="utf-8") as f:
     template=f.read()
 
-output=template.format(
-    TOTAL_CONTRIBUTIONS=total_contribs,
-    REPOS_COUNT=repos_count,
-    COMMITS_COUNT=commits,
-    PRS_COUNT=prs,
-    REVIEWS_COUNT=reviews,
-    LANG_BARS=lang_bars,
-    LANG_LABELS=lang_labels
-)
+replacements={
+    "{TOTAL_CONTRIBUTIONS}": str(total_contribs),
+    "{REPOS_COUNT}": str(repos_count),
+    "{COMMITS_COUNT}": str(commits),
+    "{PRS_COUNT}": str(prs),
+    "{REVIEWS_COUNT}": str(reviews),
+    "{LANG_BARS}": lang_bars,
+    "{LANG_LABELS}": lang_labels
+}
+
+for key, val in replacements.items():
+    template=template.replace(key, val)
+
+with open("gh-stats.svg", "w", encoding="utf-8") as f:
+    f.write(template)
 
 with open("stats.svg", "w", encoding="utf-8") as f:
-    f.write(output)
+    f.write(template)
