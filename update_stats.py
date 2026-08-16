@@ -1,12 +1,12 @@
 import os
 import requests
 
-TOKEN=os.getenv("GH_TOKEN")
-USERNAME="Parsa313-cloud"
+TOKEN=os.environ.get("GH_TOKEN")
+USERNAME="PARSA313-CLOUD"
 
 query="""
-query($username: String!) {
-  user(login: $username) {
+query($login: String!) {
+  user(login: $login) {
     repositories(first: 100, ownerAffiliations: [OWNER, COLLABORATOR], isFork: false) {
       totalCount
       nodes {
@@ -22,79 +22,92 @@ query($username: String!) {
       }
     }
     contributionsCollection {
+      contributionCalendar {
+        totalContributions
+      }
       totalCommitContributions
+      restrictedContributionsCount
       totalPullRequestContributions
       totalPullRequestReviewContributions
-      restrictedContributionsCount
     }
   }
 }
 """
 
-headers={"Authorization": f"bearer {TOKEN}"}
-res=requests.post("https://api.github.com/graphql", json={"query": query, "variables": {"username": USERNAME}}, headers=headers)
-res_data=res.json()
+headers={"Authorization": f"Bearer {TOKEN}"}
+response=requests.post(
+    "https://api.github.com/graphql",
+    json={"query": query, "variables": {"login": USERNAME}},
+    headers=headers
+)
 
-if "errors" in res_data:
-    print("GraphQL Error:", res_data["errors"])
-    raise SystemExit(1)
+data=response.json().get("data", {}).get("user", {})
+if not data:
+    raise Exception(f"GraphQL Query Failed: {response.text}")
 
-data=res_data["data"]["user"]
 repos_count=data["repositories"]["totalCount"]
-contribs=data["contributionsCollection"]
+contribs_coll=data["contributionsCollection"]
+commits_count=contribs_coll["totalCommitContributions"]
 
-commits=contribs["totalCommitContributions"]
-prs=contribs["totalPullRequestContributions"]
-reviews=contribs["totalPullRequestReviewContributions"]
-restricted=contribs.get("restrictedContributionsCount", 0)
-total_contribs=commits+prs+reviews+restricted
+total_contribs=(
+    contribs_coll["contributionCalendar"]["totalContributions"]
+    + contribs_coll.get("restrictedContributionsCount", 0)
+)
 
-lang_stats={}
+lang_sizes={}
+lang_colors={}
+
 for repo in data["repositories"]["nodes"]:
     for edge in repo["languages"]["edges"]:
-        l_name=edge["node"]["name"]
-        l_color=edge["node"]["color"] or "#858585"
-        l_size=edge["size"]
-        if l_name not in lang_stats:
-            lang_stats[l_name]={"size": 0, "color": l_color}
-        lang_stats[l_name]["size"]+=l_size
+        name=edge["node"]["name"]
+        color=edge["node"]["color"] or "#bf03b9"
+        size=edge["size"]
+        lang_sizes[name]=lang_sizes.get(name, 0)+size
+        lang_colors[name]=color
 
-total_size=sum(l["size"] for l in lang_stats.values()) or 1
-sorted_langs=sorted(lang_stats.items(), key=lambda x: x[1]["size"], reverse=True)[:3]
+total_size=sum(lang_sizes.values())
+sorted_langs=sorted(lang_sizes.items(), key=lambda x: x[1], reverse=True)[:3]
 
-lang_bars=""
-lang_labels=""
-current_x=48.0
-total_bar_width=704.0
-label_positions=[48.0, 282.66, 517.33]
+total_bar_width=704
+start_x=48
+bars_svg=[]
+labels_svg=[]
 
-for idx, (l_name, l_info) in enumerate(sorted_langs):
-    pct=l_info["size"]/total_size
+current_x=start_x
+label_x=48
+
+for name, size in sorted_langs:
+    pct=size/total_size if total_size>0 else 0
     width=pct*total_bar_width
-    lang_bars+=f'<rect x="{current_x}" y="254" width="{width}" height="6" rx="3" fill="{l_info["color"]}"/>\n'
+    color=lang_colors[name]
+    pct_formatted=f"{pct*100:.1f}%"
+    
+    bars_svg.append(f'<rect x="{current_x:.1f}" y="254" width="{width:.1f}" height="6" fill="{color}"/>')
     current_x+=width
     
-    pct_str=f"{int(round(pct*100))}%"
-    lx=label_positions[idx] if idx<len(label_positions) else 48.0
-    lang_labels+=f'''<g>
-        <rect x="{lx}" y="279" width="8" height="8" rx="2" fill="{l_info["color"]}"/>
-        <text x="{lx+16}" y="286" fill="#a5a5b3" font-family="ui-monospace, monospace" font-size="10" letter-spacing="1.4">{l_name.upper()} {pct_str}</text>
-    </g>\n'''
+    labels_svg.append(
+        f'<g transform="translate({label_x:.1f} 280)">'
+        f'<circle cx="4" cy="0" r="4" fill="{color}"/>'
+        f'<text x="14" y="3" fill="#a5a5b3" font-family=\'"Inter", system-ui, sans-serif\' font-size="11">{name}</text>'
+        f'<text x="{14 + len(name)*7 + 8}" y="3" fill="#a5a5b3" font-family=\'"Inter", system-ui, sans-serif\' font-size="11" opacity="0.6">{pct_formatted}</text>'
+        f'</g>'
+    )
+    label_x+=140
 
 with open("stats.template.svg", "r", encoding="utf-8") as f:
-    template=f.read()
+    svg_template=f.read()
 
-replacements={
-    "{TOTAL_CONTRIBUTIONS}": str(total_contribs),
-    "{REPOS_COUNT}": str(repos_count),
-    "{COMMITS_COUNT}": str(commits),
-    "{LANG_BARS}": lang_bars,
-    "{LANG_LABELS}": lang_labels
-}
+output_svg=(
+    svg_template
+    .replace("{TOTAL_CONTRIBUTIONS}", f"{total_contribs:,}")
+    .replace("{REPOS_COUNT}", str(repos_count))
+    .replace("{COMMITS_COUNT}", f"{commits_count:,}")
+    .replace("{LANG_BARS}", "\n    ".join(bars_svg))
+    .replace("{LANG_LABELS}", "\n    ".join(labels_svg))
+)
 
-for key, val in replacements.items():
-    template=template.replace(key, val)
+with open("gh-stats.svg", "w", encoding="utf-8") as f:
+    f.write(output_svg)
 
-for filename in ["gh-stats.svg", "stats.svg"]:
-    with open(filename, "w", encoding="utf-8") as f:
-        f.write(template)
+with open("stats.svg", "w", encoding="utf-8") as f:
+    f.write(output_svg)
