@@ -40,7 +40,6 @@ if "errors" in res_data:
     raise SystemExit(1)
 
 data=res_data["data"]["user"]
-
 repos_count=data["repositories"]["totalCount"]
 contribs=data["contributionsCollection"]
 
@@ -89,8 +88,6 @@ replacements={
     "{TOTAL_CONTRIBUTIONS}": str(total_contribs),
     "{REPOS_COUNT}": str(repos_count),
     "{COMMITS_COUNT}": str(commits),
-    "{PRS_COUNT}": str(prs),
-    "{REVIEWS_COUNT}": str(reviews),
     "{LANG_BARS}": lang_bars,
     "{LANG_LABELS}": lang_labels
 }
@@ -98,8 +95,6 @@ replacements={
 for key, val in replacements.items():
     template=template.replace(key, val)
 
-with open("gh-stats.svg", "w", encoding="utf-8") as f:
-    f.write(template)
-
-with open("stats.svg", "w", encoding="utf-8") as f:
-    f.write(template)
+for filename in ["gh-stats.svg", "stats.svg"]:
+    with open(filename, "w", encoding="utf-8") as f:
+        f.write(template)
