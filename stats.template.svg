@@ -6,9 +6,7 @@
     .corner { animation: cornerSlide 12s ease-out infinite; }
     .stat { animation: fadeUp 12s ease-out infinite; }
     .s0 { animation-delay: 0.3s }
-    .s1 { animation-delay: 0.4s }
-    .s2 { animation-delay: 0.5s }
-    .s3 { animation-delay: 0.6s }
+    .s1 { animation-delay: 0.45s }
     .lang-bar { animation: bar 12s ease-out infinite; transform-origin: left center; }
 
     @keyframes slidein {
@@ -63,33 +61,20 @@
   <text class="meta" x="48" y="120" fill="#a5a5b3" font-family="ui-monospace, monospace" font-size="11" letter-spacing="2">@PARSA313-CLOUD   ·   {TOTAL_CONTRIBUTIONS} CONTRIBUTIONS   ·   GRAPHQL</text>
 
   <g transform="translate(48 156)">
-      <g class="stat s0">
-        <text x="0" y="0" fill="#a5a5b3" font-family="ui-monospace, monospace" font-size="10" letter-spacing="2">REPOS</text>
-        <text x="0" y="38" fill="#f7f7fb" font-family='"Inter", system-ui, sans-serif' font-size="34" font-weight="700" letter-spacing="-1">{REPOS_COUNT}</text>
-        <text x="0" y="60" fill="#a5a5b3" font-family='"Inter", system-ui, sans-serif' font-size="11" font-weight="400">{REPOS_COUNT} indexed</text>
-      </g>
+    <g class="stat s0">
+      <text x="0" y="0" fill="#a5a5b3" font-family="ui-monospace, monospace" font-size="10" letter-spacing="2">REPOS</text>
+      <text x="0" y="38" fill="#f7f7fb" font-family='"Inter", system-ui, sans-serif' font-size="34" font-weight="700" letter-spacing="-1">{REPOS_COUNT}</text>
+      <text x="0" y="60" fill="#a5a5b3" font-family='"Inter", system-ui, sans-serif' font-size="11" font-weight="400">{REPOS_COUNT} indexed</text>
     </g>
-  <g transform="translate(230 156)">
-      <g class="stat s1">
-        <text x="0" y="0" fill="#a5a5b3" font-family="ui-monospace, monospace" font-size="10" letter-spacing="2">COMMITS</text>
-        <text x="0" y="38" fill="#f7f7fb" font-family='"Inter", system-ui, sans-serif' font-size="34" font-weight="700" letter-spacing="-1">{COMMITS_COUNT}</text>
-        <text x="0" y="60" fill="#a5a5b3" font-family='"Inter", system-ui, sans-serif' font-size="11" font-weight="400">this year</text>
-      </g>
+  </g>
+
+  <g transform="translate(400 156)">
+    <g class="stat s1">
+      <text x="0" y="0" fill="#a5a5b3" font-family="ui-monospace, monospace" font-size="10" letter-spacing="2">COMMITS</text>
+      <text x="0" y="38" fill="#f7f7fb" font-family='"Inter", system-ui, sans-serif' font-size="34" font-weight="700" letter-spacing="-1">{COMMITS_COUNT}</text>
+      <text x="0" y="60" fill="#a5a5b3" font-family='"Inter", system-ui, sans-serif' font-size="11" font-weight="400">this year</text>
     </g>
-  <g transform="translate(412 156)">
-      <g class="stat s2">
-        <text x="0" y="0" fill="#a5a5b3" font-family="ui-monospace, monospace" font-size="10" letter-spacing="2">PRS</text>
-        <text x="0" y="38" fill="#f7f7fb" font-family='"Inter", system-ui, sans-serif' font-size="34" font-weight="700" letter-spacing="-1">{PRS_COUNT}</text>
-        <text x="0" y="60" fill="#a5a5b3" font-family='"Inter", system-ui, sans-serif' font-size="11" font-weight="400">{PRS_COUNT} this year</text>
-      </g>
-    </g>
-  <g transform="translate(594 156)">
-      <g class="stat s3">
-        <text x="0" y="0" fill="#a5a5b3" font-family="ui-monospace, monospace" font-size="10" letter-spacing="2">REVIEWS</text>
-        <text x="0" y="38" fill="#f7f7fb" font-family='"Inter", system-ui, sans-serif' font-size="34" font-weight="700" letter-spacing="-1">{REVIEWS_COUNT}</text>
-        <text x="0" y="60" fill="#a5a5b3" font-family='"Inter", system-ui, sans-serif' font-size="11" font-weight="400">this year</text>
-      </g>
-    </g>
+  </g>
 
   <rect x="48" y="254" width="704" height="6" rx="3" fill="#a5a5b3" fill-opacity="0.2"/>
   <g class="lang-bar">
