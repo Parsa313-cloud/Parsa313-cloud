@@ -7,7 +7,7 @@ USERNAME="Parsa313-cloud"
 query="""
 query($username: String!) {
   user(login: $username) {
-    repositories(first: 100, ownerAffiliations: OWNER, isFork: false) {
+    repositories(first: 100, ownerAffiliations: [OWNER, COLLABORATOR, ORGANIZATION_MEMBER], isFork: false) {
       totalCount
       nodes {
         languages(first: 10, orderBy: {field: SIZE, direction: DESC}) {
