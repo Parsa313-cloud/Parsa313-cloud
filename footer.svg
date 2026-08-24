@@ -74,7 +74,7 @@
   </g>
 
   <!-- Sign-off line -->
-  <text class="signoff" x="400" y="69" text-anchor="middle" fill="#f7f7fb" font-family='"Inter", system-ui, sans-serif' font-size="12" font-weight="500">made with <tspan class="heart" fill="#bf03b9">♥</tspan> by Parsa Harooni - Python · Django · Django REST Framework · Java · C++ · PostgreSQL · Docker ·…</text>
+  <text class="signoff" x="400" y="69" text-anchor="middle" fill="#f7f7fb" font-family='"Inter", system-ui, sans-serif' font-size="12" font-weight="500">made by Parsa Harooni - Python · Django · Django REST Framework · Java · C# · PostgreSQL · Docker ·…</text>
 
   <g transform="translate(300 93)">
         <g class="soc sf0">
