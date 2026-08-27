@@ -80,7 +80,7 @@
   <g class="lang-bar">
     <rect x="48.0" y="254" width="324.65356389708984" height="6" rx="3" fill="#b07219"/>
 <rect x="372.65356389708984" y="254" width="190.7658878110502" height="6" rx="3" fill="#3572A5"/>
-<rect x="563.4194517081401" y="254" width="169.12231688457754" height="6" rx="3" fill="#178600"/>
+<rect x="563.4194517081401" y="254" width="169.12231688457754" height="6" rx="3" fill="#7355dd"/>
 
   </g>
   <g>
@@ -93,7 +93,7 @@
         <text x="298.66" y="286" fill="#a5a5b3" font-family="ui-monospace, monospace" font-size="10" letter-spacing="1.4">PYTHON 27%</text>
     </g>
 <g>
-        <rect x="517.33" y="279" width="8" height="8" rx="2" fill="#178600"/>
+        <rect x="517.33" y="279" width="8" height="8" rx="2" fill="#7355dd"/>
         <text x="533.33" y="286" fill="#a5a5b3" font-family="ui-monospace, monospace" font-size="10" letter-spacing="1.4">C# 24%</text>
     </g>
 
